@@ -1,27 +1,167 @@
-# Musicstream
+# 🎵 MusicStream
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Application de gestion et de lecture de musique locale développée avec **Angular 17**.
 
-## Development server
+MusicStream permet aux utilisateurs d'importer, organiser et écouter leurs fichiers audio locaux via une interface simple, moderne et réactive, tout en mettant en pratique une architecture Angular propre et maintenable.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## 🚀 Objectifs du projet
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+* Mettre en œuvre une **application Angular moderne** (Angular 17+)
+* Utiliser une **gestion d'état via Services + RxJS / Signals**
+* Implémenter un **CRUD complet** pour des pistes audio locales
+* Gérer la **lecture audio** avec un lecteur personnalisé
+* Appliquer les **bonnes pratiques Angular** (lazy loading, standalone components, DI)
 
-## Build
+---
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 🛠️ Technologies utilisées
 
-## Running unit tests
+* **Angular 17** (Standalone API)
+* **TypeScript**
+* **RxJS / Signals**
+* **Reactive Forms**
+* **HTMLAudioElement / Web Audio API**
+* **IndexedDB** (stockage des fichiers audio)
+* **CSS** (ou framework UI selon évolution)
+* **Jasmine / Karma** (tests)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+---
 
-## Running end-to-end tests
+## 📁 Architecture du projet
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```text
+src/app
+├── core
+│   ├── models          # Interfaces et modèles (Track, etc.)
+│   └── services        # Services métier (audio, storage, tracks)
+│
+├── features
+│   ├── library         # Bibliothèque musicale
+│   │   ├── library     # Liste des tracks
+│   │   └── track-detail# Détail et lecture d’un track
+│   │
+├── shared
+│   ├── components      # Composants réutilisables
+│   └── pipes           # Pipes personnalisés
+│
+├── app.routes.ts       # Routing principal (lazy loading)
+├── app.config.ts       # Configuration globale
+└── app.component.*     # Composant racine
+```
 
-## Further help
+---
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## 🎧 Fonctionnalités principales
+
+### Gestion des tracks (CRUD)
+
+* Ajouter une piste audio locale
+* Modifier les métadonnées d’un track
+* Supprimer un track
+* Consulter la liste complète
+
+### Métadonnées d’un track
+
+* Titre (max 50 caractères)
+* Artiste
+* Description optionnelle (max 200 caractères)
+* Date d’ajout (automatique)
+* Durée (calculée automatiquement)
+* Catégorie musicale (pop, rock, rap, etc.)
+* Image de couverture (optionnelle)
+
+### Lecteur audio
+
+* ▶️ Play / ⏸ Pause
+* ⏭ Next / ⏮ Previous
+* 🔊 Contrôle du volume
+* ⏱ Barre de progression
+* Gestion des états : `playing`, `paused`, `buffering`, `stopped`
+
+---
+
+## 💾 Gestion du stockage
+
+* Stockage **côté client**
+* Utilisation de **IndexedDB** (recommandé pour fichiers volumineux)
+* Séparation claire entre :
+
+  * Fichiers audio
+  * Métadonnées
+
+### Contraintes
+
+* Taille maximale par fichier : **10 MB**
+* Formats supportés : **MP3, WAV, OGG**
+* Images : **PNG, JPEG**
+
+---
+
+## ✅ Validations & gestion d’erreurs
+
+* Validation des formulaires (Reactive Forms)
+* Vérification des formats de fichiers
+* Gestion des erreurs de stockage
+* Messages UI adaptés aux états (`loading`, `error`, `success`)
+
+---
+
+## 🧪 Tests
+
+* Tests unitaires des services
+* Tests des composants principaux
+* Jasmine / Karma
+
+---
+
+## 🐳 Bonus (optionnels)
+
+* Drag & drop pour réorganiser les tracks
+* API externe de lyrics
+* Dockerisation de l’application
+
+---
+
+## 📦 Installation & lancement
+
+```bash
+# Installation des dépendances
+npm install
+
+# Lancement du serveur de développement
+ng serve
+```
+
+Accéder à l’application :
+
+```
+http://localhost:4200
+```
+
+---
+
+## 📅 Planning
+
+* **Durée** : 10 jours
+* **Début** : 05/01/2026
+* **Fin** : 16/01/2026
+
+---
+
+## 📎 Livrables
+
+* 📁 Code source : GitHub
+* 📊 Suivi projet : Jira
+* 📄 Documentation : README.md
+
+---
+
+## 👤 Auteur
+
+**Moustapha Ndiaye**
+
+---
+
+🎶 *MusicStream – Simple. Local. Efficient.*
