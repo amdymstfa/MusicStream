@@ -12,9 +12,18 @@ export const routes: Routes = [
    // set library path
    {
         path: 'library',
-        loadComponent: () => import(
-            './features/library/library.component'
-        ).then(m => m.LibraryComponent)
+        loadChildren: () => import(
+            './features/library/library.routes'
+        ).then(m => m.LIBRARY_ROUTES)
+   },
+
+   // set track path
+
+   {
+        path: 'track/:id',
+        loadChildren: () => import(
+            './features/track-detail/track-detail.routes'
+        ).then(m => m.TRACK_DETAIL_ROUTES)
    },
 
    // default page in not found cas
