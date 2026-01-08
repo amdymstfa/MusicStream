@@ -18,7 +18,6 @@ export const routes: Routes = [
    },
 
    // set track path
-
    {
         path: 'track/:id',
         loadChildren: () => import(
@@ -26,6 +25,27 @@ export const routes: Routes = [
         ).then(m => m.TRACK_DETAIL_ROUTES)
    },
 
+   // set add-track path
+
+   {
+        path: 'track/add',
+        loadChildren: () => import(
+            './features/library/add-track/add-track.routes'
+        ).then(m => m.ADD_TRACK_ROUTES) 
+   },
+
+   // set edit-track path
+
+   {
+        path: 'track/edit/:id',
+        loadChildren: () => import(
+            './features/library/edit-track/edit-track.routes'
+        ).then(m => m.EDIT_TRACK_ROUTES)
+   },
+
+   // set resusable path component
+
+   {},
    // default page in not found cas
    {
         path: '**',
