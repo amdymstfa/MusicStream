@@ -9,6 +9,14 @@ export const routes: Routes = [
         pathMatch: 'full'
    },
 
+   // set library path
+   {
+        path: 'library',
+        loadComponent: () => import(
+            './features/library/library.component'
+        ).then(m => m.LibraryComponent)
+   },
+
    // default page in not found cas
    {
         path: '**',
