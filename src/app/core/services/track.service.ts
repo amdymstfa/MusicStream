@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Track } from '../models/track.model';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class TrackService {
       readonly loading$ = this.loadingSubject.asObservable();
       readonly error$ = this.errorSubject.asObservable();
 
-      constructor() { }
+      constructor(private storage: StorageService) { }
 
       // load tracks
       loadTracks(): void {
@@ -27,8 +28,9 @@ export class TrackService {
         try {
 
           // storage service
-          const tracks: Track[] = [];
+          // const tracks: Track[] = [];
 
+          const tracks = this.storage.getTracks();
           this.trackSubject.next(tracks);
           this.loadingSubject.next(false);
 
@@ -45,7 +47,7 @@ export class TrackService {
 
           const updatedTracks = [...this.trackSubject.value, track];
           this.trackSubject.next(updatedTracks);
-
+          this.storage.saveTracks(updatedTracks);
           this.loadingSubject.next(false);
       }
 
@@ -58,6 +60,7 @@ export class TrackService {
         );
 
         this.trackSubject.next(updatedTracks);
+        this.storage.saveTracks(updatedTracks);
         this.loadingSubject.next(false);
       }
 
@@ -72,6 +75,7 @@ export class TrackService {
         );
 
         this.trackSubject.next(updatedTracks);
+        this.storage.saveTracks(updatedTracks);
         this.loadingSubject.next(false);
       }
 
