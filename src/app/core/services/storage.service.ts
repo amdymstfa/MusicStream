@@ -15,7 +15,7 @@ export class StorageService {
       return data ? JSON.parse(data) : [] ;
   }
 
-  saveTracks( tracks : Track) : void {
+  saveTracks( tracks : Track[]) : void {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(tracks));
   }
 
