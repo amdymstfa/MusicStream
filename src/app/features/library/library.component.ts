@@ -1,37 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { Track } from '../../core/models/track.model';
-import { TrackService } from '../../core/services/track.service';
 import { CommonModule } from '@angular/common';
+import { TrackService } from '../../core/services/track.service';
+
 @Component({
   selector: 'app-library',
   standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   templateUrl: './library.component.html',
   styleUrl: './library.component.css'
 })
-export class LibraryComponent implements OnInit{
+export class LibraryComponent implements OnInit {
 
-    tracks: Track[] = [];
-    loading = false ;
-    error: string | null = null ;
+  tracks$ = this.trackService.tracks$;
+  loading$ = this.trackService.loading$;
+  error$ = this.trackService.error$;
 
-    constructor(private trackService: TrackService){}
-  
-    ngOnInit(): void {
+  constructor(private trackService: TrackService) {}
 
-      // load tracks
-      this.trackService.loadTracks();
-
-      // listen tracks
-      this.trackService.tracks$.subscribe(tracks => {this.tracks = tracks});
-
-      // listen loading
-      this.trackService.loading$.subscribe(loading => {this.loading = loading});
-
-      // listen error 
-      this.trackService.error$.subscribe(error => {this.error = error});
-        
-    }
+  ngOnInit(): void {
+    // load tracks
+    this.trackService.loadTracks();
+  }
 }

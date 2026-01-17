@@ -1,1 +1,26 @@
-<p>library works!</p>
+<h2>Music library</h2>
+
+<!-- loading -->
+<p *ngIf="loading$ | async">Loading...</p>
+
+<!-- error -->
+<p *ngIf="error$ | async as error" class="error">
+  {{ error }}
+</p>
+
+<!-- tracks list -->
+<ul *ngIf="tracks$ | async as tracks">
+
+  <!-- empty state -->
+  <p *ngIf="tracks.length === 0">
+    No songs available.
+  </p>
+
+  <!-- all tracks -->
+  <li *ngFor="let track of tracks">
+    <strong>{{ track.title }}</strong>
+    - {{ track.artist }}
+    ({{ track.duration }})
+  </li>
+
+</ul>
