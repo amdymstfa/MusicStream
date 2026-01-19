@@ -1,1 +1,16 @@
-<p>track-card works!</p>
+<div class="track-card">
+    <!-- info of track -->
+    <div class="info">
+        <p>{{track.title}}</p>
+        <p>{{track.artist}}</p>
+        <small>Duration : {{track.duration}}</small>
+    </div>
+
+
+    <!-- actions -->
+     <div class="actions">
+        <button (click)="onDelete()">Delete</button>
+        <button (click)="onEdit()">Edit</button>
+     </div>
+
+</div>

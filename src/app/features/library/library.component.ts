@@ -7,7 +7,7 @@ import { TrackService } from '../../core/services/track.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './library.component.html',
-  styleUrl: './library.component.css'
+  styleUrls: ['./library.component.css']
 })
 export class LibraryComponent implements OnInit {
 
