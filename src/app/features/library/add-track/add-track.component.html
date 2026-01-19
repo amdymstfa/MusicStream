@@ -1,32 +1,109 @@
-<h2>Add New Track</h2>
+<div class="add-track-container">
+  <div class="form-wrapper">
+    <div class="form-header">
+      <h1>Add New Track</h1>
+      <button class="btn-back" (click)="goBack()">← Back to Library</button>
+    </div>
 
-<form [formGroup]="trackForm" (ngSubmit)="submit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="add-track-form">
+      <!-- Title Field -->
+      <div class="form-group">
+        <label for="title">Track Title *</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="Enter track title"
+          class="form-input"
+          [class.input-error]="form.get('title')?.invalid && form.get('title')?.touched"
+        />
+        <div class="error-text" *ngIf="titleError && form.get('title')?.touched">
+          {{ titleError }}
+        </div>
+        <div class="char-counter">{{ form.get('title')?.value?.length || 0 }}/50</div>
+      </div>
 
-  <label>
-    Title
-    <input type="text" formControlName="title">
-  </label>
-  <div *ngIf="trackForm.get('title')?.invalid && trackForm.get('title')?.touched">
-    Title is required (max 50 chars)
+      <!-- Artist Field -->
+      <div class="form-group">
+        <label for="artist">Artist Name *</label>
+        <input
+          id="artist"
+          type="text"
+          formControlName="artist"
+          placeholder="Enter artist name"
+          class="form-input"
+          [class.input-error]="form.get('artist')?.invalid && form.get('artist')?.touched"
+        />
+        <div class="error-text" *ngIf="artistError && form.get('artist')?.touched">
+          {{ artistError }}
+        </div>
+        <div class="char-counter">{{ form.get('artist')?.value?.length || 0 }}/50</div>
+      </div>
+
+      <!-- Category Field -->
+      <div class="form-group">
+        <label for="category">Category *</label>
+        <select id="category" formControlName="category" class="form-input">
+          <option *ngFor="let cat of categories" [value]="cat">
+            {{ cat | titlecase }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Description Field -->
+      <div class="form-group">
+        <label for="description">Description (Optional)</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          placeholder="Enter track description (max 200 characters)"
+          class="form-textarea"
+          rows="4"
+          [class.input-error]="form.get('description')?.invalid && form.get('description')?.touched"
+        ></textarea>
+        <div class="error-text" *ngIf="descriptionError && form.get('description')?.touched">
+          {{ descriptionError }}
+        </div>
+        <div class="char-counter">{{ form.get('description')?.value?.length || 0 }}/200</div>
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group">
+        <label for="audio-file">Audio File * (MP3, WAV, OGG - Max 10MB)</label>
+        <div class="file-input-wrapper">
+          <input
+            id="audio-file"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="audio/mpeg,audio/wav,audio/ogg,audio/webm"
+            class="file-input"
+          />
+          <div class="file-input-label">
+            {{ selectedFile ? selectedFile.name : 'Choose audio file...' }}
+          </div>
+        </div>
+        <div class="file-size-hint" *ngIf="selectedFile">
+          Size: {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Success Message -->
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" [disabled]="isSubmitting || !selectedFile">
+          {{ isSubmitting ? 'Adding...' : 'Add Track' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="goBack()">Cancel</button>
+      </div>
+    </form>
   </div>
-
-  <label>
-    Artist
-    <input type="text" formControlName="artist">
-  </label>
-
-  <label>
-    Audio URL
-    <input type="text" formControlName="audioUrl">
-  </label>
-
-  <label>
-    Cover URL (optional)
-    <input type="text" formControlName="coverUrl">
-  </label>
-
-  <button type="submit" [disabled]="trackForm.invalid">
-    Save
-  </button>
-
-</form>
+</div>

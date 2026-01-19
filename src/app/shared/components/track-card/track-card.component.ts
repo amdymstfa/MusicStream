@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Track } from '../../../core/models/track.model';
-import { AudioPlayerService, PlayerState } from '../../../core/services/audio-player.service';
+import { TrackMetadata } from '../../../core/models/track.model';
 
 @Component({
   selector: 'app-track-card',
@@ -11,35 +10,28 @@ import { AudioPlayerService, PlayerState } from '../../../core/services/audio-pl
   styleUrls: ['./track-card.component.css']
 })
 export class TrackCardComponent {
+  @Input() track!: TrackMetadata;
+  @Output() edit = new EventEmitter<void>();
+  @Output() delete = new EventEmitter<void>();
 
-  @Input({ required: true }) track!: Track;
-
-  @Output() delete = new EventEmitter<string>();
-  @Output() edit = new EventEmitter<string>();
-
-  // exposer les streams
-  currentTrack$ = this.audioPlayer.currentTrack$;
-  state$ = this.audioPlayer.state$;
-
-  constructor(private audioPlayer: AudioPlayerService) {}
-
-  onDelete(): void {
-    this.delete.emit(this.track.id);
+  onEdit(event: Event): void {
+    event.stopPropagation();
+    this.edit.emit();
   }
 
-  onEdit(): void {
-    this.edit.emit(this.track.id);
+  onDelete(event: Event): void {
+    event.stopPropagation();
+    this.delete.emit();
   }
 
-  play(): void {
-    this.audioPlayer.playTrack(this.track);
+  formatDuration(seconds: number): string {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 
-  pause(): void {
-    this.audioPlayer.pause();
-  }
-
-  isCurrent(trackId: string, current: Track | null): boolean {
-    return current?.id === trackId;
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString();
   }
 }

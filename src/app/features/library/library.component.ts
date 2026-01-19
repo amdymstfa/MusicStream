@@ -1,35 +1,73 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
 import { TrackService } from '../../core/services/track.service';
 import { TrackCardComponent } from '../../shared/components/track-card/track-card.component';
+import { TrackMetadata } from '../../core/models/track.model';
 
 @Component({
   selector: 'app-library',
   standalone: true,
-  imports: [CommonModule, TrackCardComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, TrackCardComponent],
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.css']
 })
 export class LibraryComponent implements OnInit {
+  searchQuery: string = '';
+  selectedCategory: string = '';
+  filteredTracks: TrackMetadata[] = [];
+  allCategories: string[] = [];
 
-  tracks$ = this.trackService.tracks$;
-  loading$ = this.trackService.loading$;
-  error$ = this.trackService.error$;
-
-  constructor(private trackService: TrackService) {}
+  constructor(
+    public trackService: TrackService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // load tracks
-    this.trackService.loadTracks();
+    this.trackService.state$.subscribe(state => {
+      this.applyFilters();
+      this.allCategories = this.trackService.getCategories();
+    });
   }
 
-  onDeleteTrack(id: string): void{
-    this.trackService.deleteTrack(id);
+  onSearch(): void {
+    this.applyFilters();
   }
 
-  onEditTrack(id: string) : void {
-    console.log('Edit track', id);
-    
+  onCategoryChange(): void {
+    this.applyFilters();
   }
 
+  private applyFilters(): void {
+    let filtered = this.trackService.getAllTracks();
+
+    if (this.searchQuery.trim()) {
+      filtered = this.trackService.searchTracks(this.searchQuery);
+    }
+
+    if (this.selectedCategory) {
+      filtered = filtered.filter(track => track.category === this.selectedCategory);
+    }
+
+    this.filteredTracks = filtered;
+  }
+
+  goToTrackDetail(trackId: string): void {
+    this.router.navigate(['/track', trackId]);
+  }
+
+  goToAddTrack(): void {
+    this.router.navigate(['/library/add']);
+  }
+
+  editTrack(trackId: string): void {
+    this.router.navigate(['/library/edit', trackId]);
+  }
+
+  async deleteTrack(trackId: string): Promise<void> {
+    if (confirm('Are you sure you want to delete this track?')) {
+      await this.trackService.deleteTrack(trackId);
+    }
+  }
 }

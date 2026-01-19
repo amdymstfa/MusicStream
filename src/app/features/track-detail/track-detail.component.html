@@ -1,1 +1,118 @@
-<p>track-detail works!</p>
+<div class="track-detail-container">
+  <div *ngIf="isLoading" class="loading">Loading track...</div>
+
+  <div *ngIf="!isLoading && errorMessage" class="error-message">
+    {{ errorMessage }}
+    <button class="btn-back-error" (click)="goBack()">← Back to Library</button>
+  </div>
+
+  <div *ngIf="!isLoading && track && playerStatus" class="track-detail-content">
+    <!-- Header -->
+    <div class="detail-header">
+      <button class="btn-back" (click)="goBack()">← Back to Library</button>
+      <div class="actions-top">
+        <button class="btn-edit" (click)="editTrack()">✏️ Edit</button>
+        <button class="btn-delete" (click)="deleteTrack()">🗑️ Delete</button>
+      </div>
+    </div>
+
+    <!-- Track Information -->
+    <div class="track-info-section">
+      <div class="info-card">
+        <h1>{{ track.title }}</h1>
+        <p class="artist-name">by {{ track.artist }}</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Category</span>
+            <span class="value">{{ track.category | titlecase }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Duration</span>
+            <span class="value">{{ formatDuration(track.duration) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Added</span>
+            <span class="value">{{ formatDate(track.dateAdded) }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="track.description" class="description">
+          <h3>Description</h3>
+          <p>{{ track.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Section -->
+    <div class="player-section">
+      <div class="player-card">
+        <div class="player-info">
+          <h2>Now Playing</h2>
+          <p>{{ track.title }} - {{ track.artist }}</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <span class="time-display">{{ formatDuration(playerStatus.currentTime) }}</span>
+          <input
+            type="range"
+            min="0"
+            [max]="playerStatus.duration || 0"
+            [value]="playerStatus.currentTime"
+            (input)="setProgress($event)"
+            class="progress-slider"
+            [disabled]="playerStatus.state === 'stopped'"
+          />
+          <span class="time-display">{{ formatDuration(playerStatus.duration) }}</span>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls">
+          <button class="btn-control btn-play" (click)="playTrack()" [disabled]="isPlaying()">
+            ▶ Play
+          </button>
+          <button class="btn-control btn-pause" (click)="pauseTrack()" [disabled]="isPaused()">
+            ⏸ Pause
+          </button>
+          <button class="btn-control btn-stop" (click)="stopTrack()">
+            ⏹ Stop
+          </button>
+        </div>
+
+        <!-- Volume Control -->
+        <div class="volume-container">
+          <label for="volume">Volume:</label>
+          <div class="volume-control">
+            <span class="volume-label">🔇</span>
+            <input
+              id="volume"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              [value]="playerStatus.volume"
+              (input)="setVolume($event)"
+              class="volume-slider"
+            />
+            <span class="volume-label">🔊</span>
+          </div>
+          <span class="volume-percent">{{ Math.round(playerStatus.volume * 100) }}%</span>
+        </div>
+
+        <!-- Loading/Status Indicator -->
+        <div *ngIf="playerStatus.isLoading" class="loading-indicator">
+          Loading audio...
+        </div>
+
+        <!-- State Display -->
+        <div class="player-state">
+          State:
+          <span class="state-badge" [ngClass]="'state-' + playerStatus.state">
+            {{ playerStatus.state | uppercase }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,32 +1,61 @@
-<h2>Music library</h2>
+<div class="library-container">
+  <div class="library-header">
+    <div class="header-top">
+      <h1>Music Library</h1>
+      <button class="btn-add-track" (click)="goToAddTrack()">Add New Track</button>
+    </div>
 
-<!-- loading -->
-<p *ngIf="loading$ | async">Loading...</p>
+    <div class="filters-section">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          placeholder="Search by title or artist..."
+          class="search-input"
+        />
+      </div>
 
-<!-- error -->
-<p *ngIf="error$ | async as error" class="error">
-  {{ error }}
-</p>
+      <div class="category-filter">
+        <label for="category-select">Category:</label>
+        <select
+          id="category-select"
+          [(ngModel)]="selectedCategory"
+          (change)="onCategoryChange()"
+          class="category-select"
+        >
+          <option value="">All Categories</option>
+          <option *ngFor="let category of allCategories" [value]="category">
+            {{ category | titlecase }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-<!-- tracks list -->
-<ul *ngIf="tracks$ | async as tracks">
+  <div class="tracks-section">
+    <div *ngIf="filteredTracks.length === 0" class="empty-state">
+      <p>No tracks found. {{ searchQuery || selectedCategory ? 'Try different filters.' : 'Add your first track!' }}</p>
+    </div>
 
-  <!-- empty state -->
-  <p *ngIf="tracks.length === 0">
-    No songs available.
-  </p>
+    <div *ngIf="filteredTracks.length > 0" class="tracks-grid">
+      <div *ngFor="let track of filteredTracks" class="track-item">
+        <app-track-card
+          [track]="track"
+          (click)="goToTrackDetail(track.id)"
+          (edit)="editTrack(track.id)"
+          (delete)="deleteTrack(track.id)"
+        ></app-track-card>
+      </div>
+    </div>
+  </div>
 
-  <!-- all tracks -->
-  <!-- <li *ngFor="let track of tracks">
-    <strong>{{ track.title }}</strong>
-    - {{ track.artist }}
-    ({{ track.duration }})
-  </li> -->
-  <app-track-card
-    *ngFor="let track of tracks"
-    [track]="track"
-    (delete)="onDeleteTrack($event)"
-    (edit)="onEditTrack($event)"
-  ></app-track-card>
-
-</ul>
+  <div *ngIf="trackService.state$ | async as state" class="status-message">
+    <div *ngIf="state.error" class="error-message">
+      {{ state.error }}
+    </div>
+    <div *ngIf="state.loadingState === 'loading'" class="loading-message">
+      Loading...
+    </div>
+  </div>
+</div>

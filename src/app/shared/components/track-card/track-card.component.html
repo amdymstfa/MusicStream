@@ -1,36 +1,33 @@
 <div class="track-card">
-
-  <!-- info -->
-  <div class="info">
-    <p><strong>{{ track.title }}</strong></p>
-    <p>{{ track.artist }}</p>
-    <small>Duration : {{ track.duration }}</small>
+  <div class="card-header">
+    <div class="track-info">
+      <h3 class="track-title">{{ track.title }}</h3>
+      <p class="track-artist">{{ track.artist }}</p>
+    </div>
+    <span class="category-badge">{{ track.category | titlecase }}</span>
   </div>
 
-  <!-- audio controls -->
-  <div class="player"
-       *ngIf="currentTrack$ | async as current">
+  <div class="card-details">
+    <div class="detail-row">
+      <span class="label">Duration:</span>
+      <span class="value">{{ formatDuration(track.duration) }}</span>
+    </div>
+    <div class="detail-row" *ngIf="track.description">
+      <span class="label">Description:</span>
+      <span class="value description-text">{{ track.description }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="label">Added:</span>
+      <span class="value">{{ formatDate(track.dateAdded) }}</span>
+    </div>
+  </div>
 
-    <!-- PLAY -->
-    <button
-      *ngIf="!isCurrent(track.id, current) || (state$ | async) !== 'playing'"
-      (click)="play()">
-      ▶ Play
+  <div class="card-actions">
+    <button class="btn-edit" (click)="onEdit($event)" title="Edit track">
+      <span>✏️ Edit</span>
     </button>
-
-    <!-- PAUSE -->
-    <button
-      *ngIf="isCurrent(track.id, current) && (state$ | async) === 'playing'"
-      (click)="pause()">
-      ⏸ Pause
+    <button class="btn-delete" (click)="onDelete($event)" title="Delete track">
+      <span>🗑️ Delete</span>
     </button>
-
   </div>
-
-  <!-- actions -->
-  <div class="actions">
-    <button (click)="onEdit()">✏ Edit</button>
-    <button (click)="onDelete()">🗑 Delete</button>
-  </div>
-
 </div>

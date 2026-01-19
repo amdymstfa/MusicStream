@@ -1,75 +1,127 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TrackService } from '../../../core/services/track.service';
-import { Track } from '../../../core/models/track.model';
-import { first } from 'rxjs/operators';
+import { TrackMetadata } from '../../../core/models/track.model';
 
 @Component({
   selector: 'app-edit-track',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './edit-track.component.html',
   styleUrls: ['./edit-track.component.css']
 })
 export class EditTrackComponent implements OnInit {
+  form!: FormGroup;
+  selectedFile: File | null = null;
+  errorMessage: string = '';
+  successMessage: string = '';
+  isSubmitting: boolean = false;
+  trackId: string | null = null;
+  currentTrack: TrackMetadata | null = null;
+  isLoading: boolean = true;
 
-  trackId!: string;
-  track?: Track;
-
-  trackForm = this.fb.group({
-    title: ['', [Validators.required, Validators.maxLength(50)]],
-    artist: ['', [Validators.required]],
-    audioUrl: ['', Validators.required],
-    coverUrl: ['']
-  });
+  categories = ['pop', 'rock', 'rap', 'jazz', 'classical', 'electronic', 'other'];
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
+    private trackService: TrackService,
     private router: Router,
-    private trackService: TrackService
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    // Retrieve the ID from the URL
-    this.trackId = this.route.snapshot.paramMap.get('id')!;
-
-    // Retrieve the corresponding track
-    this.trackService.tracks$.pipe(first()).subscribe(tracks => {
-      const t = tracks.find(track => track.id === this.trackId);
-      if (!t) {
-        // redirection if track not found
-        this.router.navigate(['/library']);
-        return;
+    this.trackId = this.route.snapshot.paramMap.get('id');
+    if (this.trackId) {
+      this.currentTrack = this.trackService.getTrackById(this.trackId);
+      if (this.currentTrack) {
+        this.initializeForm();
+        this.isLoading = false;
+      } else {
+        this.errorMessage = 'Track not found';
+        this.isLoading = false;
       }
-      this.track = t;
+    }
+  }
 
-      // pre-fill the form
-      this.trackForm.patchValue({
-        title: t.title,
-        artist: t.artist,
-        audioUrl: t.audioUrl,
-        coverUrl: t.coverUrl
-      });
+  private initializeForm(): void {
+    this.form = this.fb.group({
+      title: [this.currentTrack?.title || '', [Validators.required, Validators.maxLength(50)]],
+      artist: [this.currentTrack?.artist || '', [Validators.required, Validators.maxLength(50)]],
+      category: [this.currentTrack?.category || 'pop', Validators.required],
+      description: [this.currentTrack?.description || '', [Validators.maxLength(200)]]
     });
   }
 
-  submit(): void {
-    if (this.trackForm.invalid || !this.track) return;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.errorMessage = '';
+    }
+  }
 
-    const updatedTrack: Track = {
-      ...this.track,
-      title: this.trackForm.value.title!,
-      artist: this.trackForm.value.artist!,
-      audioUrl: this.trackForm.value.audioUrl!,
-      coverUrl: this.trackForm.value.coverUrl || undefined
-    };
+  async onSubmit(): Promise<void> {
+    if (!this.form.valid || !this.trackId) {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      return;
+    }
 
-    this.trackService.updateTrack(updatedTrack);
+    this.isSubmitting = true;
+    this.errorMessage = '';
 
-    // back to the library
-    this.router.navigate(['/library']);
+    const { title, artist, category, description } = this.form.value;
+
+    const result = await this.trackService.updateTrack(this.trackId, {
+      title,
+      artist,
+      category,
+      description,
+      file: this.selectedFile || undefined
+    });
+
+    if (result) {
+      this.successMessage = 'Track updated successfully!';
+      setTimeout(() => {
+        this.router.navigate(['/track', this.trackId]);
+      }, 1500);
+    } else {
+      this.trackService.state$.subscribe(state => {
+        if (state.error) {
+          this.errorMessage = state.error;
+        }
+      });
+    }
+
+    this.isSubmitting = false;
+  }
+
+  goBack(): void {
+    if (this.trackId) {
+      this.router.navigate(['/track', this.trackId]);
+    } else {
+      this.router.navigate(['/library']);
+    }
+  }
+
+  get titleError(): string {
+    const control = this.form.get('title');
+    if (control?.hasError('required')) return 'Title is required';
+    if (control?.hasError('maxlength')) return 'Title must be 50 characters or less';
+    return '';
+  }
+
+  get artistError(): string {
+    const control = this.form.get('artist');
+    if (control?.hasError('required')) return 'Artist name is required';
+    if (control?.hasError('maxlength')) return 'Artist name must be 50 characters or less';
+    return '';
+  }
+
+  get descriptionError(): string {
+    const control = this.form.get('description');
+    if (control?.hasError('maxlength')) return 'Description must be 200 characters or less';
+    return '';
   }
 }
