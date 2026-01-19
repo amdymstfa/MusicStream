@@ -17,10 +17,16 @@
   </p>
 
   <!-- all tracks -->
-  <li *ngFor="let track of tracks">
+  <!-- <li *ngFor="let track of tracks">
     <strong>{{ track.title }}</strong>
     - {{ track.artist }}
     ({{ track.duration }})
-  </li>
+  </li> -->
+  <app-track-card
+    *ngFor="let track of tracks"
+    [track]="track"
+    (delete)="onDeleteTrack($event)"
+    (edit)="onEditTrack($event)"
+  ></app-track-card>
 
 </ul>
