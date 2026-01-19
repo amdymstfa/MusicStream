@@ -1,1 +1,32 @@
-<p>edit-track works!</p>
+<h2>Edit Track</h2>
+
+<form [formGroup]="trackForm" (ngSubmit)="submit()">
+
+  <label>
+    Title
+    <input type="text" formControlName="title">
+  </label>
+  <div *ngIf="trackForm.get('title')?.invalid && trackForm.get('title')?.touched">
+    Title is required (max 50 chars)
+  </div>
+
+  <label>
+    Artist
+    <input type="text" formControlName="artist">
+  </label>
+
+  <label>
+    Audio URL
+    <input type="text" formControlName="audioUrl">
+  </label>
+
+  <label>
+    Cover URL (optional)
+    <input type="text" formControlName="coverUrl">
+  </label>
+
+  <button type="submit" [disabled]="trackForm.invalid">
+    Update
+  </button>
+
+</form>
