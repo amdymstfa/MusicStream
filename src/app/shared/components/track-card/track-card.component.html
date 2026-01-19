@@ -1,16 +1,36 @@
 <div class="track-card">
-    <!-- info of track -->
-    <div class="info">
-        <p>{{track.title}}</p>
-        <p>{{track.artist}}</p>
-        <small>Duration : {{track.duration}}</small>
-    </div>
 
+  <!-- info -->
+  <div class="info">
+    <p><strong>{{ track.title }}</strong></p>
+    <p>{{ track.artist }}</p>
+    <small>Duration : {{ track.duration }}</small>
+  </div>
 
-    <!-- actions -->
-     <div class="actions">
-        <button (click)="onDelete()">Delete</button>
-        <button (click)="onEdit()">Edit</button>
-     </div>
+  <!-- audio controls -->
+  <div class="player"
+       *ngIf="currentTrack$ | async as current">
+
+    <!-- PLAY -->
+    <button
+      *ngIf="!isCurrent(track.id, current) || (state$ | async) !== 'playing'"
+      (click)="play()">
+      ▶ Play
+    </button>
+
+    <!-- PAUSE -->
+    <button
+      *ngIf="isCurrent(track.id, current) && (state$ | async) === 'playing'"
+      (click)="pause()">
+      ⏸ Pause
+    </button>
+
+  </div>
+
+  <!-- actions -->
+  <div class="actions">
+    <button (click)="onEdit()">✏ Edit</button>
+    <button (click)="onDelete()">🗑 Delete</button>
+  </div>
 
 </div>
